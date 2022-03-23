@@ -16,3 +16,22 @@
 		display: block;
 	}
 }
+
+._icon-navigation:before {
+	content: "\e900";
+}
+._icon-social-twitter:before {
+	content: "\e901";
+}
+._icon-social-facebook:before {
+	content: "\e902";
+}
+._icon-mail:before {
+	content: "\e903";
+}
+._icon-phone:before {
+	content: "\e904";
+}
+._icon-contact:before {
+	content: "\e904";
+}

@@ -1,1 +1,27 @@
 @include font("icons", "icons", "400", "normal");
+
+@font-face {
+	font-family: icons;
+	font-display: swap;
+	src: url("/src/font/icon.woff") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Acumin Pro";
+	src: url("/src/font/AcuminPro-Regular.woff2") format("woff2"), url("/src/font/AcuminPro-Regular.woff") format("woff"),
+		url("/src/font/AcuminPro-Regular.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Acumin Pro";
+	src: url("/src/font/AcuminPro-Bold.woff2") format("woff2"), url("/src/font/AcuminPro-Bold.woff") format("woff"),
+		url("/src/font/AcuminPro-Bold.ttf") format("truetype");
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}

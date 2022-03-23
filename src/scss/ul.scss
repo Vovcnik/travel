@@ -1,4 +1,6 @@
 ._title {
 	font-weight: 600;
 	color: #1a080a;
+	line-height: math.div(53, 41);
+	@include adaptiveValue("font-size", 41, 30);
 }
