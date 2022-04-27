@@ -4,3 +4,33 @@
 	line-height: math.div(53, 41);
 	@include adaptiveValue("font-size", 41, 30);
 }
+
+._button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	position: relative;
+	background: #ff4c64;
+	border-radius: 5px;
+	color: #fff;
+	transition: all 0.3s ease 0s;
+	border: 1px solid transparent;
+	cursor: pointer;
+	z-index: 5;
+
+	@media (max-width: $mobile) {
+		margin: 0px 20px 0px 0px;
+		flex: 0 0 106px;
+		height: 37px;
+		font-size: rem(16);
+	}
+	@media (min-width: $mobile) {
+		&:hover {
+			background: #fff;
+			color: #ff4d64;
+			transition: all 0.3s ease 0s;
+			border: 1px solid #ff4d64;
+		}
+	}
+}

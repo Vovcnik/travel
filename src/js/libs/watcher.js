@@ -1,5 +1,6 @@
-// Импорт функционала 
-import { isMobile, uniqArray } from "../files/functions.js";
+// Подключение функционала "Чертогов Фрилансера"
+import { isMobile, uniqArray, FLS } from "../files/functions.js";
+import { flsModules } from "../files/modules.js";
 
 // Наблюдатель объектов [всевидещее око]
 // data-watch - можно писать значение для применения кастомного кода
@@ -9,15 +10,14 @@ import { isMobile, uniqArray } from "../files/functions.js";
 // data-watch-once - наблюдать только один раз
 // _watcher-view - класс который добавляется при появлении объекта
 
-export class ScrollWatcher {
+class ScrollWatcher {
 	constructor(props) {
 		let defaultConfig = {
-			logging: false,
-			callback: () => { },
+			logging: true,
 		}
 		this.config = Object.assign(defaultConfig, props);
 		this.observer;
-		this.scrollWatcherRun();
+		!document.documentElement.classList.contains('watcher') ? this.scrollWatcherRun() : null;
 	}
 	// Обновляем конструктор
 	scrollWatcherUpdate() {
@@ -133,7 +133,7 @@ export class ScrollWatcher {
 	}
 	// Функция вывода в консоль
 	scrollWatcherLogging(message) {
-		this.config.logging ? console.log(`[Наблюдатель]: ${message}`) : null;
+		this.config.logging ? FLS(`[Наблюдатель]: ${message}`) : null;
 	}
 	// Функция обработки наблюдения
 	scrollWatcherCallback(entry, observer) {
@@ -141,8 +141,26 @@ export class ScrollWatcher {
 		// Обработка базовых действий точек срабатываения
 		this.scrollWatcherIntersecting(entry, targetElement);
 		// Если есть атрибут data-watch-once убираем слежку
-		targetElement.hasAttribute('data-watch-once') && entry.isIntersecting ? scrollWatcherOff(targetElement, observer) : null;
+		targetElement.hasAttribute('data-watch-once') && entry.isIntersecting ? this.scrollWatcherOff(targetElement, observer) : null;
+		// Создаем свое событие отбратной связи
+		document.dispatchEvent(new CustomEvent("watcherCallback", {
+			detail: {
+				entry: entry
+			}
+		}));
 
-		this.config.callback(entry, observer);
+		/*
+		// Выбираем нужные объекты
+		if (targetElement.dataset.watch === 'some value') {
+			// пишем уникальную специфику
+		}
+		if (entry.isIntersecting) {
+			// Видим объект
+		} else {
+			// Не видим объект
+		}
+		*/
 	}
 }
+// Запускаем и добавляем в объект модулей
+flsModules.watcher = new ScrollWatcher({});

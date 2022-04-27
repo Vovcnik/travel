@@ -2,6 +2,7 @@
 //====================================================================================================
 .header {
 	// .header__container
+	padding: 50px 0px 0px 0px;
 
 	&__container {
 	}
@@ -29,8 +30,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin: 50px 0px 0px 0px;
+		margin: 0px 100px 0px 0px;
 		z-index: 2;
+		@media (max-width: $tablet) {
+			margin: 0;
+		}
 	}
 
 	// .menu__list
@@ -57,15 +61,14 @@
 			position: fixed;
 			width: 106px;
 			height: 50px;
-			background: rgb(255, 255, 255);
+			background: #e5e5e5;
 			left: -100%;
-			transition: all 0.3s ease 0s;
+			transition: all 0.5s ease 0s;
 			opacity: 0;
 			.menu-open & {
 				left: 2%;
 				opacity: 1;
 				transition: all 0.8s ease-in-out 0s;
-
 				li {
 					@for $var from 1 to 6 {
 						$delay: $var * 0.2;
@@ -98,35 +101,9 @@
 	}
 }
 
-.button {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+.button-header {
 	flex: 0 0 126px;
 	height: 57px;
-	position: relative;
-	background: #ff4c64;
-	border-radius: 5px;
-	color: #fff;
-	transition: all 0.3s ease 0s;
-	border: 1px solid transparent;
-	cursor: pointer;
-	z-index: 5;
-
-	@media (max-width: $mobile) {
-		margin: 0px 20px 0px 0px;
-		flex: 0 0 106px;
-		height: 37px;
-		font-size: rem(16);
-	}
-	@media (min-width: $mobile) {
-		&:hover {
-			background: #fff;
-			color: #ff4d64;
-			transition: all 0.3s ease 0s;
-			border: 1px solid #ff4d64;
-		}
-	}
 }
 
 //========================================================================================================================================================

@@ -1,27 +1,25 @@
-// Импорт функционала ==============================================================================================================================================================================================================================================================================================================================
+// Подключение функционала "Чертогов Фрилансера"
+// Подключение списка активных модулей
+import { flsModules } from "../modules.js";
 // Вспомогательные функции
-import { isMobile, _slideUp, _slideDown, _slideToggle } from "../functions.js";
-// Модуль попапа
-// import { popupItem } from "../popups.js";
+import { isMobile, _slideUp, _slideDown, _slideToggle, FLS } from "../functions.js";
 // Модуль прокрутки к блоку
-// import { gotoBlock } from "../scroll/gotoblock.js";
-//==============================================================================================================================================================================================================================================================================================================================
+import { gotoBlock } from "../scroll/gotoblock.js";
+//================================================================================================================================================================================================================================================================================================================================
 
 /*
-Чтобы поле участвовало в валидации добавляем атрибут data-required
-Особые проверки:
-data-required="email" - вадидация E-mail
-
-Чтобы поле валидировалось при потере фокуса, 
-к атрибуту data-required добавляем атрибут data-validate
+Документация: https://template.fls.guru/template-docs/rabota-s-formami.html
 */
 
 // Работа с полями формы. Добавление классов, работа с placeholder
-export function formFieldsInit() {
+export function formFieldsInit(options = { viewPass: false }) {
+	// Если включено, добавляем функционал "скрыть плейсходлер при фокусе"
 	const formFields = document.querySelectorAll('input[placeholder],textarea[placeholder]');
 	if (formFields.length) {
 		formFields.forEach(formField => {
-			formField.dataset.placeholder = formField.placeholder;
+			if (!formField.hasAttribute('data-placeholder-nohide')) {
+				formField.dataset.placeholder = formField.placeholder;
+			}
 		});
 	}
 	document.body.addEventListener("focusin", function (e) {
@@ -30,9 +28,10 @@ export function formFieldsInit() {
 			if (targetElement.dataset.placeholder) {
 				targetElement.placeholder = '';
 			}
-			targetElement.classList.add('_focus');
-			targetElement.parentElement.classList.add('_focus');
-
+			if (!targetElement.hasAttribute('data-no-focus-classes')) {
+				targetElement.classList.add('_form-focus');
+				targetElement.parentElement.classList.add('_form-focus');
+			}
 			formValidate.removeError(targetElement);
 		}
 	});
@@ -42,15 +41,28 @@ export function formFieldsInit() {
 			if (targetElement.dataset.placeholder) {
 				targetElement.placeholder = targetElement.dataset.placeholder;
 			}
-			targetElement.classList.remove('_focus');
-			targetElement.parentElement.classList.remove('_focus');
-
+			if (!targetElement.hasAttribute('data-no-focus-classes')) {
+				targetElement.classList.remove('_form-focus');
+				targetElement.parentElement.classList.remove('_form-focus');
+			}
 			// Моментальная валидация
 			if (targetElement.hasAttribute('data-validate')) {
 				formValidate.validateInput(targetElement);
 			}
 		}
 	});
+
+	// Если включено, добавляем функционал "Показать пароль"
+	if (options.viewPass) {
+		document.addEventListener("click", function (e) {
+			let targetElement = e.target;
+			if (targetElement.closest('[class*="__viewpass"]')) {
+				let inputType = targetElement.classList.contains('_viewpass-active') ? "password" : "text";
+				targetElement.parentElement.querySelector('input').setAttribute("type", inputType);
+				targetElement.classList.toggle('_viewpass-active');
+			}
+		});
+	}
 }
 // Валидация форм
 export let formValidate = {
@@ -59,7 +71,7 @@ export let formValidate = {
 		let formRequiredItems = form.querySelectorAll('*[data-required]');
 		if (formRequiredItems.length) {
 			formRequiredItems.forEach(formRequiredItem => {
-				if (formRequiredItem.offsetParent !== null) {
+				if ((formRequiredItem.offsetParent !== null || formRequiredItem.tagName === "SELECT") && !formRequiredItem.disabled) {
 					error += this.validateInput(formRequiredItem);
 				}
 			});
@@ -80,7 +92,7 @@ export let formValidate = {
 			this.addError(formRequiredItem);
 			error++;
 		} else {
-			if (!formRequiredItem.value) {
+			if (!formRequiredItem.value.trim()) {
 				this.addError(formRequiredItem);
 				error++;
 			} else {
@@ -90,66 +102,73 @@ export let formValidate = {
 		return error;
 	},
 	addError(formRequiredItem) {
-		formRequiredItem.classList.add('_error');
-		formRequiredItem.parentElement.classList.add('_error');
+		formRequiredItem.classList.add('_form-error');
+		formRequiredItem.parentElement.classList.add('_form-error');
 		let inputError = formRequiredItem.parentElement.querySelector('.form__error');
 		if (inputError) formRequiredItem.parentElement.removeChild(inputError);
-		if (formRequiredItem.hasAttribute('data-error') && formRequiredItem.getAttribute('data-error')) {
-			formRequiredItem.parentElement.insertAdjacentHTML('beforeend', '<div class="form__error">' + formRequiredItem.getAttribute('data-error') + '</div>');
+		if (formRequiredItem.dataset.error) {
+			formRequiredItem.parentElement.insertAdjacentHTML('beforeend', `<div class="form__error">${formRequiredItem.dataset.error}</div>`);
 		}
 	},
 	removeError(formRequiredItem) {
-		formRequiredItem.classList.remove('_error');
-		formRequiredItem.parentElement.classList.remove('_error');
+		formRequiredItem.classList.remove('_form-error');
+		formRequiredItem.parentElement.classList.remove('_form-error');
 		if (formRequiredItem.parentElement.querySelector('.form__error')) {
 			formRequiredItem.parentElement.removeChild(formRequiredItem.parentElement.querySelector('.form__error'));
 		}
 	},
 	formClean(form) {
-		let inputs = form.querySelectorAll('input,textarea');
-		for (let index = 0; index < inputs.length; index++) {
-			const el = inputs[index];
-			el.parentElement.classList.remove('_focus');
-			el.classList.remove('_focus');
-			el.value = el.dataset.placeholder;
-		}
-		let checkboxes = form.querySelectorAll('.checkbox__input');
-		if (checkboxes.length > 0) {
-			for (let index = 0; index < checkboxes.length; index++) {
-				const checkbox = checkboxes[index];
-				checkbox.checked = false;
+		form.reset();
+		setTimeout(() => {
+			let inputs = form.querySelectorAll('input,textarea');
+			for (let index = 0; index < inputs.length; index++) {
+				const el = inputs[index];
+				el.parentElement.classList.remove('_form-focus');
+				el.classList.remove('_form-focus');
+				formValidate.removeError(el);
 			}
-		}
-		let selects = form.querySelectorAll('select');
-		if (selects.length > 0) {
-			for (let index = 0; index < selects.length; index++) {
-				const select = selects[index];
-				const select_default_value = select.getAttribute('data-default');
-				select.value = select_default_value;
-				select_item(select);
+			let checkboxes = form.querySelectorAll('.checkbox__input');
+			if (checkboxes.length > 0) {
+				for (let index = 0; index < checkboxes.length; index++) {
+					const checkbox = checkboxes[index];
+					checkbox.checked = false;
+				}
 			}
-		}
+			if (flsModules.select) {
+				let selects = form.querySelectorAll('.select');
+				if (selects.length) {
+					for (let index = 0; index < selects.length; index++) {
+						const select = selects[index].querySelector('select');
+						flsModules.select.selectBuild(select);
+					}
+				}
+			}
+		}, 0);
 	},
 	emailTest(formRequiredItem) {
 		return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(formRequiredItem.value);
 	}
 }
 /* Отправка форм */
-export function formSubmit(validate) {
+export function formSubmit(options = { validate: true }) {
 	const forms = document.forms;
 	if (forms.length) {
 		for (const form of forms) {
-			form.addEventListener('submit', formSubmit);
+			form.addEventListener('submit', function (e) {
+				const form = e.target;
+				formSubmitAction(form, e);
+			});
+			form.addEventListener('reset', function (e) {
+				const form = e.target;
+				formValidate.formClean(form);
+			});
 		}
 	}
-	async function formSubmit(e) {
-		const form = e.target;
-		const error = validate ? formValidate.getErrors(form) : 0;
+	async function formSubmitAction(form, e) {
+		const error = !form.hasAttribute('data-no-validate') ? formValidate.getErrors(form) : 0;
 		if (error === 0) {
-			const message = form.getAttribute('data-message');
 			const ajax = form.hasAttribute('data-ajax');
-			//SendForm
-			if (ajax) {
+			if (ajax) { // Если режим ajax
 				e.preventDefault();
 				const formAction = form.getAttribute('action') ? form.getAttribute('action').trim() : '#';
 				const formMethod = form.getAttribute('method') ? form.getAttribute('method').trim() : 'GET';
@@ -163,45 +182,47 @@ export function formSubmit(validate) {
 				if (response.ok) {
 					let responseResult = await response.json();
 					form.classList.remove('_sending');
-					if (message) {
-						// Нужно подключить зависимость
-						popupItem.open(`#${message}`);
-					}
-					formValidate.formClean(form);
+					formSent(form, responseResult);
 				} else {
 					alert("Ошибка");
 					form.classList.remove('_sending');
 				}
-			}
-			// If test
-			if (form.hasAttribute('data-test')) {
+			} else if (form.hasAttribute('data-dev')) {	// Если режим разработки
 				e.preventDefault();
-				if (message) {
-					// Нужно подключить зависимость
-					popupItem.open(`#${message}`);
-				}
-				formValidate.formClean(form);
+				formSent(form);
 			}
 		} else {
-			const formError = form.querySelector('._error');
-			if (formError && form.hasAttribute('data-goto-error')) {
-				// Нужно подключить зависимость
-				gotoBlock(formError, 1000, 50);
-			}
 			e.preventDefault();
+			const formError = form.querySelector('._form-error');
+			if (formError && form.hasAttribute('data-goto-error')) {
+				gotoBlock(formError, true, 1000);
+			}
 		}
 	}
-}
-/* Модуь формы "показать пароль" */
-export function formViewpass() {
-	document.addEventListener("click", function (e) {
-		let targetElement = e.target;
-		if (targetElement.closest('[class*="__viewpass"]')) {
-			let inputType = targetElement.classList.contains('active') ? "password" : "text";
-			targetElement.parentElement.querySelector('input').setAttribute("type", inputType);
-			targetElement.classList.toggle('active');
-		}
-	});
+	// Действия после отправки формы
+	function formSent(form, responseResult = ``) {
+		// Создаем событие отправки формы
+		document.dispatchEvent(new CustomEvent("formSent", {
+			detail: {
+				form: form
+			}
+		}));
+		// Показываем попап, если подключен модуль попапов 
+		// и для формы указана настройка
+		setTimeout(() => {
+			if (flsModules.popup) {
+				const popup = form.dataset.popupMessage;
+				popup ? flsModules.popup.open(popup) : null;
+			}
+		}, 0);
+		// Очищаем форму
+		formValidate.formClean(form);
+		// Сообщаем в консоль
+		formLogging(`Форма отправлена!`);
+	}
+	function formLogging(message) {
+		FLS(`[Формы]: ${message}`);
+	}
 }
 /* Модуь формы "колличество" */
 export function formQuantity() {
@@ -321,4 +342,3 @@ export function formRating() {
 		}
 	}
 }
-
