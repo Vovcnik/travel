@@ -9,9 +9,14 @@
 	&__items {
 		margin: 80px auto 0px auto;
 		display: flex;
+
 		justify-content: space-between;
 
 		height: 100%;
+		@media (max-width: $tablet) {
+			justify-content: center;
+			flex-wrap: wrap;
+		}
 	}
 
 	// .travel-top__item
@@ -23,11 +28,14 @@
 .left-big {
 	position: absolute;
 	top: 0;
-	left: -42px;
+	left: -1%;
 	width: 52px;
 	height: 52px;
 	border-radius: 50%;
 	background: linear-gradient(180deg, #ffe6e9 0%, rgba(255, 230, 233, 0) 100%);
+	@media (max-width: $mobile) {
+		top: -75px;
+	}
 }
 
 .center-small {
@@ -53,6 +61,16 @@
 	border-radius: 50%;
 	background: linear-gradient(302.42deg, #efe5e5 41.49%, #ff6377 110.64%);
 	transform: rotate(120deg);
+	@media (max-width: $tablet) {
+		top: -54px;
+		right: 11%;
+	}
+	@media (max-width: $mobile) {
+		right: -8%;
+	}
+	@media (max-width: $mobileSmall) {
+		right: -14%;
+	}
 }
 
 .agent {
@@ -61,10 +79,14 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: flex-start;
-	min-height: 600px;
+	margin: 0px 0px 50px 0px;
 	padding: 50px 5px;
 	position: relative;
-
+	@media (max-width: $tablet) {
+		flex: 0 1 100%;
+		align-items: center;
+		padding: 0px 5px;
+	}
 	// .agent__title
 
 	&__title {
@@ -74,7 +96,9 @@
 		@include adaptiveValue("font-size", 56, 36);
 		line-height: math.div(67, 56);
 		color: #19080a;
-
+		@media (max-width: $tablet) {
+			text-align: center;
+		}
 		span {
 			white-space: nowrap;
 		}
@@ -87,6 +111,10 @@
 		line-height: math.div(33, 22);
 		max-width: 504px;
 		margin: 25px 0px 50px 0px;
+		@media (max-width: $tablet) {
+			max-width: 80%;
+			text-align: center;
+		}
 	}
 
 	// .agent__btn
@@ -95,6 +123,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
+		@media (max-width: $mobile) {
+			flex-wrap: wrap;
+			justify-content: center;
+		}
 	}
 }
 .button-agent {
@@ -103,6 +135,9 @@
 	font-size: 18px;
 	line-height: math.div(27, 18);
 	margin: 0px 45px 0px 0px;
+	@media (max-width: $mobile) {
+		margin: 0px 0px 25px 0px;
+	}
 }
 
 .agent-video {
@@ -122,13 +157,32 @@
 	}
 }
 .img-srvice {
-	flex: 0 1 48%;
+	flex: 1 1 48%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: flex-end;
 	text-align: center;
 	position: relative;
+	@media (max-width: $tablet) {
+		flex: 1 1 48%;
+	}
+
+	&::after {
+		content: "";
+		position: absolute;
+		width: 30%;
+		height: 50%;
+		right: 75%;
+		top: 174px;
+		background: url("@img/tкavel/samolet.png") 0 0 no-repeat;
+		@media (max-width: $tablet) {
+			right: 65%;
+		}
+		@media (max-width: $mobile) {
+			display: none;
+		}
+	}
 
 	&::before {
 		content: "";
