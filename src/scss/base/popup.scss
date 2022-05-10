@@ -59,3 +59,11 @@ body::after {
 		visibility: visible;
 	}
 }
+
+.popup__text {
+	height: 500px;
+	display: flex;
+	iframe {
+		width: 100%;
+	}
+}

@@ -52,13 +52,13 @@ class MousePRLX {
 			const paralaxMouseWrapper = el.closest('[data-prlx-mouse-wrapper]');
 
 			// Коэф. X 
-			const paramСoefficientX = el.dataset.prlxCx ? +el.dataset.prlxCx : 35;
+			const paramСoefficientX = el.dataset.prlxCx ? +el.dataset.prlxCx : 100;
 			// Коэф. У 
-			const paramСoefficientY = el.dataset.prlxCy ? +el.dataset.prlxCy : -35;
+			const paramСoefficientY = el.dataset.prlxCy ? +el.dataset.prlxCy : 100;
 			// Напр. Х
-			const directionX = el.hasAttribute('data-prlx-dxr') ? -1 : 2;
+			const directionX = el.hasAttribute('data-prlx-dxr') ? -1 : 1;
 			// Напр. У
-			const directionY = el.hasAttribute('data-prlx-dyr') ? -1 : 2;
+			const directionY = el.hasAttribute('data-prlx-dyr') ? -1 : 1;
 			// Скорость анимации
 			const paramAnimation = el.dataset.prlxA ? +el.dataset.prlxA : 50;
 

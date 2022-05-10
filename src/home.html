@@ -6,6 +6,7 @@
 
 <body>
 	<div class="wrapper">
+		@@include('html/_popup.htm',{})
 		@@include('html/_header.htm',{})
 		<main class="page ">
 
@@ -19,7 +20,7 @@
 							<span data-prlx-mouse class="right-big"></span>
 							<div class="agent__title ">Our travel agents are <br>
 								with the best
-								<span>service we have.</spa>
+								<span>service we have.</span>
 							</div>
 							<div class="agent__text">The best places in the budget. Premier Travel Going The Distance For You.
 								The best vacation is the one you will never forget. </div>
@@ -27,15 +28,20 @@
 							<div class="agent__btn">
 								<a href="" class="button-agent _button">Get Started</a>
 								<div class="agent-video">
-									<img src="@img/tкavel/play_button.png" alt="">
-									<a href="#" class="agent-video__text">Play video</a>
+									<button type="button" data-popup="#video" data-popup-youtube="kwPqZyS2ttA"><img
+											src="@img/tкavel/play_button.png" alt=""></button>
+
+
+									<button type="button" class="button-video" data-popup="#video"
+										data-popup-youtube="kwPqZyS2ttA">Play
+										video</button>
 
 								</div>
 							</div>
 						</div>
 
 						<div class="travel-top__item img-srvice">
-							<img src="@img/tкavel/woomen.png" alt="">
+							<img class="img-woomen" src="@img/tкavel/woomen.png" alt="">
 							<div class="img-srvice__our">
 								<img src="@img/tкavel/check_mark.png" alt="">
 								<div class="img-srvice__subtitle">24/7</div>
@@ -48,10 +54,24 @@
 				</div>
 
 			</section>
+
+			<section class="destination">
+				<div class="destination__container _container">
+					<div class="destination-title _title">The Best Destination</div>
+					<div class="destination-subtitle">The best places in the budget. Premier Travel Going The Distance For
+						You.</div>
+
+
+
+
+				</div>
+
+
+			</section>
 		</main>
 		@@include('html/_footer.htm',{})
 	</div>
-	<!-- @@include('html/_popup.htm',{}) -->
+	@@include('html/_popup.htm',{})
 	@@include('html/_js.htm',{})
 </body>
 

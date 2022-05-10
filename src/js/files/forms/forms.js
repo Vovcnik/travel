@@ -12,7 +12,7 @@ import { gotoBlock } from "../scroll/gotoblock.js";
 */
 
 // Работа с полями формы. Добавление классов, работа с placeholder
-export function formFieldsInit(options = { viewPass: false }) {
+export function formFieldsInit(options = { viewPass: false, autoHeight: false }) {
 	// Если включено, добавляем функционал "скрыть плейсходлер при фокусе"
 	const formFields = document.querySelectorAll('input[placeholder],textarea[placeholder]');
 	if (formFields.length) {
@@ -51,7 +51,6 @@ export function formFieldsInit(options = { viewPass: false }) {
 			}
 		}
 	});
-
 	// Если включено, добавляем функционал "Показать пароль"
 	if (options.viewPass) {
 		document.addEventListener("click", function (e) {
@@ -62,6 +61,28 @@ export function formFieldsInit(options = { viewPass: false }) {
 				targetElement.classList.toggle('_viewpass-active');
 			}
 		});
+	}
+	// Если включено, добавляем функционал "Автовысота"
+	if (options.autoHeight) {
+		const textareas = document.querySelectorAll('textarea[data-autoheight]');
+		if (textareas.length) {
+			textareas.forEach(textarea => {
+				const startHeight = textarea.hasAttribute('data-autoheight-min') ?
+					Number(textarea.dataset.autoheightMin) : Number(textarea.offsetHeight);
+				const maxHeight = textarea.hasAttribute('data-autoheight-max') ?
+					Number(textarea.dataset.autoheightMax) : Infinity;
+				setHeight(textarea, Math.min(startHeight, maxHeight))
+				textarea.addEventListener('input', () => {
+					if (textarea.scrollHeight > startHeight) {
+						textarea.style.height = `auto`;
+						setHeight(textarea, Math.min(Math.max(textarea.scrollHeight, startHeight), maxHeight));
+					}
+				});
+			});
+			function setHeight(textarea, height) {
+				textarea.style.height = `${height}px`;
+			}
+		}
 	}
 }
 // Валидация форм
@@ -150,7 +171,7 @@ export let formValidate = {
 	}
 }
 /* Отправка форм */
-export function formSubmit(options = { validate: true }) {
+export function formSubmit() {
 	const forms = document.forms;
 	if (forms.length) {
 		for (const form of forms) {
@@ -228,15 +249,25 @@ export function formSubmit(options = { validate: true }) {
 export function formQuantity() {
 	document.addEventListener("click", function (e) {
 		let targetElement = e.target;
-		if (targetElement.closest('.quantity__button')) {
-			let value = parseInt(targetElement.closest('.quantity').querySelector('input').value);
-			if (targetElement.classList.contains('quantity__button_plus')) {
+		if (targetElement.closest('[data-quantity-plus]') || targetElement.closest('[data-quantity-minus]')) {
+			const valueElement = targetElement.closest('[data-quantity]').querySelector('[data-quantity-value]');
+			let value = parseInt(valueElement.value);
+			if (targetElement.hasAttribute('data-quantity-plus')) {
 				value++;
+				if (+valueElement.dataset.quantityMax && +valueElement.dataset.quantityMax < value) {
+					value = valueElement.dataset.quantityMax;
+				}
 			} else {
 				--value;
-				if (value < 1) value = 1;
+				if (+valueElement.dataset.quantityMin) {
+					if (+valueElement.dataset.quantityMin > value) {
+						value = valueElement.dataset.quantityMin;
+					}
+				} else if (value < 1) {
+					value = 1;
+				}
 			}
-			targetElement.closest('.quantity').querySelector('input').value = value;
+			targetElement.closest('[data-quantity]').querySelector('[data-quantity-value]').value = value;
 		}
 	});
 }
